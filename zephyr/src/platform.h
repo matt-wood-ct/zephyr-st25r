@@ -251,7 +251,7 @@ extern uint8_t globalCommProtectCnt;                      /* Global Protection C
   Custom analog configs are used to cope with Automatic Antenna Tuning (AAT)
   that are optimized differently for each board.
 */
-#define RFAL_ANALOG_CONFIG_CUSTOM                         /*!< Use Custom Analog Configs when defined                                    */
+//#define RFAL_ANALOG_CONFIG_CUSTOM                         /*!< Use Custom Analog Configs when defined                                    */
 
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
