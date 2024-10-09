@@ -238,7 +238,7 @@ ReturnCode ndefT2TPollerReadBytes(ndefContext *ctx, uint32_t offset, uint32_t le
             lvBuf     = &lvBuf[le];
             lvOffset += le;
             lvLen    -= le;
-            k_usleep(100);
+            k_msleep(50);
         } while( lvLen != 0U );
     }
 
