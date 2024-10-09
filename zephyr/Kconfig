@@ -67,7 +67,7 @@ config RFAL_FEATURE_T1T
 
 config RFAL_FEATURE_T2T
     bool "Enable/Disable RFAL support for T2T"
-    default n
+    default y
 
 config RFAL_FEATURE_T4T
     bool "Enable/Disable RFAL support for T4T"
@@ -159,6 +159,10 @@ config ST25R_THREAD_STACK_SIZE
 	help
 	  Stack size of thread used by the driver to handle interrupts.
 
+
+config ST25R_NDEF_SUPPORT
+    bool "Include NDEF extensions"
+    default y
 endif # ST25R
 
 module = ST25R
