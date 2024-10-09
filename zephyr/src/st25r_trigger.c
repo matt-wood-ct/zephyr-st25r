@@ -8,7 +8,11 @@
 #include <zephyr/logging/log.h>
 
 #include "platform.h"
+#if CONFIG_ST25R3916B
 #include "st25r3916_irq.h"
+#elif CONFIG_ST25R3911B || CONFIG_ST25R3911
+#include "st25r3911_interrupt.h"
+#endif
 
 #include "st25r.h"
 
@@ -18,7 +22,11 @@ static void st25r_handle_interrupt(const struct device *dev)
 {
 	const struct st25r_device_config *cfg = dev->config;
 
+#if CONFIG_ST25R3916B
 	st25r3916Isr();
+#elif CONFIG_ST25R3911B || CONFIG_ST25R3911
+	st25r3911Isr();
+#endif
 
 	gpio_pin_interrupt_configure_dt(&cfg->int_gpio, GPIO_INT_EDGE_TO_ACTIVE);
 }

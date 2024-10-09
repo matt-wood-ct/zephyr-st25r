@@ -37,7 +37,7 @@
 */
 #include "st25r3911_com.h"
 #include "st25r3911.h"
-#include "rfal_utils.h"
+#include "utils.h"
 
 
 /*
@@ -142,7 +142,7 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t* values, uint8_t length
   
         if( values != NULL )
         {
-            RFAL_MEMSET( values, 0x00, length );
+            memset( values, 0x00, length );
         }
         
         /* Since the result comes one byte later, let's first transmit the adddress with discarding the result */
@@ -395,7 +395,7 @@ void st25r3911ReadFifo(uint8_t* buf, uint8_t length)
   
         if( buf != NULL )
         {
-            RFAL_MEMSET( buf, 0x00, length );
+            memset( buf, 0x00, length );
         }
         
         platformSpiTxRx( &cmd, NULL, ST25R3911_CMD_LEN );

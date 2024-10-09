@@ -39,7 +39,7 @@
 #include "st25r3911.h"
 #include "st25r3911_com.h"
 #include "st25r3911_interrupt.h"
-#include "rfal_utils.h"
+#include "utils.h"
 
 
 /*
@@ -131,10 +131,10 @@ ReturnCode st25r3911OscOn( void )
     /* Double check that OSC_OK signal is set */
     if( !st25r3911CheckReg( ST25R3911_REG_AUX_DISPLAY, ST25R3911_REG_AUX_DISPLAY_osc_ok, ST25R3911_REG_AUX_DISPLAY_osc_ok ) )
     {
-        return RFAL_ERR_SYSTEM;
+        return ERR_SYSTEM;
     }
     
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 
@@ -164,7 +164,7 @@ ReturnCode st25r3911Initialize(void)
     if( !st25r3911CheckChipID( NULL ) )
     {
         platformErrorHandle();
-        return RFAL_ERR_HW_MISMATCH;
+        return ERR_HW_MISMATCH;
     }
 
     st25r3911InitInterrupts();
@@ -174,13 +174,13 @@ ReturnCode st25r3911Initialize(void)
      * Check communication interface: 
      *  - write a pattern in a register
      *  - reads back the register value
-     *  - return RFAL_ERR_IO in case the read value is different
+     *  - return ERR_IO in case the read value is different
      */
     st25r3911WriteRegister( ST25R3911_REG_BIT_RATE, ST25R3911_TEST_REG_PATTERN );
     if( !st25r3911CheckReg( ST25R3911_REG_BIT_RATE, (ST25R3911_REG_BIT_RATE_mask_rxrate | ST25R3911_REG_BIT_RATE_mask_txrate), ST25R3911_TEST_REG_PATTERN ) )
     {
         platformErrorHandle();
-        return RFAL_ERR_IO;
+        return ERR_IO;
     }
     /* Restore default value */
     st25r3911WriteRegister( ST25R3911_REG_BIT_RATE, 0x00 );
@@ -189,7 +189,7 @@ ReturnCode st25r3911Initialize(void)
      * Check IRQ Handling:
      *  - use the Wake-up timer to trigger an IRQ
      *  - wait the Wake-up timer interrupt
-     *  - return RFAL_ERR_TIMEOUT when the Wake-up timer interrupt is not received
+     *  - return ERR_TIMEOUT when the Wake-up timer interrupt is not received
      */
     st25r3911WriteRegister( ST25R3911_REG_WUP_TIMER_CONTROL, (ST25R3911_REG_WUP_TIMER_CONTROL_wur|ST25R3911_REG_WUP_TIMER_CONTROL_wto) );
     st25r3911EnableInterrupts( ST25R3911_IRQ_MASK_WT );
@@ -197,7 +197,7 @@ ReturnCode st25r3911Initialize(void)
     if(st25r3911WaitForInterruptsTimed( ST25R3911_IRQ_MASK_WT, ST25R3911_TEST_WU_TOUT) == 0U )
     {
         platformErrorHandle();
-        return RFAL_ERR_TIMEOUT;
+        return ERR_TIMEOUT;
     }
     
     st25r3911DisableInterrupts( ST25R3911_IRQ_MASK_WT );
@@ -206,7 +206,7 @@ ReturnCode st25r3911Initialize(void)
 #endif /* ST25R_SELFTEST */
 
     ret = st25r3911OscOn();
-    if( ret != RFAL_ERR_NONE )
+    if( ret != ERR_NONE )
     {
         return ret;
     }
@@ -235,7 +235,7 @@ ReturnCode st25r3911Initialize(void)
     if( st25r3911WaitForInterruptsTimed(ST25R3911_IRQ_MASK_GPE, (ST25R3911_TEST_TMR_TOUT - ST25R3911_TEST_TMR_TOUT_DELTA)) != 0U )
     {
         platformErrorHandle();
-        return RFAL_ERR_SYSTEM;
+        return ERR_SYSTEM;
     }
     
     /* Stop all activities to stop the GP timer */
@@ -245,7 +245,7 @@ ReturnCode st25r3911Initialize(void)
     if(st25r3911WaitForInterruptsTimed( ST25R3911_IRQ_MASK_GPE, (ST25R3911_TEST_TMR_TOUT + ST25R3911_TEST_TMR_TOUT_DELTA)) == 0U )
     {
         platformErrorHandle();
-        return RFAL_ERR_SYSTEM;
+        return ERR_SYSTEM;
     }
     
     /* Stop all activities to stop the GP timer */
@@ -259,7 +259,7 @@ ReturnCode st25r3911Initialize(void)
     /* And clear them, just to be sure... */
     st25r3911ClearInterrupts();
 
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 void st25r3911Deinitialize(void)
@@ -279,7 +279,7 @@ ReturnCode st25r3911AdjustRegulators(uint16_t* result_mV)
 {
     uint8_t result;
     uint8_t io_conf2;
-    ReturnCode err = RFAL_ERR_NONE;
+    ReturnCode err = ERR_NONE;
 
     /* Reset logic and set regulated voltages to be defined by result of Adjust Regulators command */
     st25r3911SetRegisterBits( ST25R3911_REG_REGULATOR_CONTROL, ST25R3911_REG_REGULATOR_CONTROL_reg_s );
@@ -364,9 +364,9 @@ ReturnCode st25r3911CalibrateCapacitiveSensor(uint8_t* result)
     
     /* Check wether the calibration was successull */
     if( ((res & ST25R3911_REG_CAP_SENSOR_RESULT_cs_cal_end) != ST25R3911_REG_CAP_SENSOR_RESULT_cs_cal_end) ||
-        ((res & ST25R3911_REG_CAP_SENSOR_RESULT_cs_cal_err) == ST25R3911_REG_CAP_SENSOR_RESULT_cs_cal_err) || (ret != RFAL_ERR_NONE) )
+        ((res & ST25R3911_REG_CAP_SENSOR_RESULT_cs_cal_err) == ST25R3911_REG_CAP_SENSOR_RESULT_cs_cal_err) || (ret != ERR_NONE) )
     {
-        return RFAL_ERR_IO;
+        return ERR_IO;
     }
     
     if( result != NULL )
@@ -374,7 +374,7 @@ ReturnCode st25r3911CalibrateCapacitiveSensor(uint8_t* result)
         (*result) = (uint8_t)(res >> ST25R3911_REG_CAP_SENSOR_CONTROL_shift_cs_mcal);
     }
     
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 
@@ -387,7 +387,7 @@ ReturnCode st25r3911SetBitrate(uint8_t txRate, uint8_t rxRate)
     {
         if(rxRate > ST25R3911_BR_3390)
         {
-            return RFAL_ERR_PARAM;
+            return ERR_PARAM;
         }
         else
         {
@@ -399,7 +399,7 @@ ReturnCode st25r3911SetBitrate(uint8_t txRate, uint8_t rxRate)
     {
         if(txRate > ST25R3911_BR_6780)
         {
-            return RFAL_ERR_PARAM;
+            return ERR_PARAM;
         }
         else
         {
@@ -409,7 +409,7 @@ ReturnCode st25r3911SetBitrate(uint8_t txRate, uint8_t rxRate)
     }
     st25r3911WriteRegister(ST25R3911_REG_BIT_RATE, reg);
     
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 uint8_t st25r3911MeasurePowerSupply( uint8_t mpsv )
@@ -510,7 +510,7 @@ bool st25r3911CheckChipID( uint8_t *rev )
 
 ReturnCode st25r3911SetNoResponseTime_64fcs(uint32_t nrt_64fcs)
 {
-    ReturnCode err = RFAL_ERR_NONE;
+    ReturnCode err = ERR_NONE;
     uint8_t nrt_step = 0;
     uint32_t noResponseTime_64fcs = nrt_64fcs;      /* MISRA 17.8: Use intermediate variable */
 
@@ -522,7 +522,7 @@ ReturnCode st25r3911SetNoResponseTime_64fcs(uint32_t nrt_64fcs)
         if (noResponseTime_64fcs > (uint32_t)0xFFFFU)
         {
             noResponseTime_64fcs = 0xFFFFU;
-            err = RFAL_ERR_PARAM;
+            err = ERR_PARAM;
         }
         st25r3911NoResponseTime_64fcs = 64U * noResponseTime_64fcs;
     }
@@ -539,7 +539,7 @@ ReturnCode st25r3911SetStartNoResponseTime_64fcs(uint32_t nrt_64fcs)
     ReturnCode err;
     
     err = st25r3911SetNoResponseTime_64fcs( nrt_64fcs );
-    if(err == RFAL_ERR_NONE)
+    if(err == ERR_NONE)
     {
         st25r3911ExecuteCommand(ST25R3911_CMD_START_NO_RESPONSE_TIMER);
     }
@@ -556,7 +556,7 @@ ReturnCode st25r3911PerformCollisionAvoidance( uint8_t FieldONCmd, uint8_t pdThr
         (FieldONCmd != ST25R3911_CMD_RESPONSE_RF_COLLISION_0) && 
         (FieldONCmd != ST25R3911_CMD_RESPONSE_RF_COLLISION_N)   )
     {
-        return RFAL_ERR_PARAM;
+        return ERR_PARAM;
     }
     
     /* Check if new thresholds are to be applied */
@@ -596,16 +596,16 @@ ReturnCode st25r3911PerformCollisionAvoidance( uint8_t FieldONCmd, uint8_t pdThr
     
     if((ST25R3911_IRQ_MASK_CAC & irqs) != 0U)                             /* Collision occurred */
     {
-        return RFAL_ERR_RF_COLLISION;
+        return ERR_RF_COLLISION;
     }
     
     if((ST25R3911_IRQ_MASK_CAT & irqs) != 0U)                             /* No Collision detected, Field On */
     {
-        return RFAL_ERR_NONE;
+        return ERR_NONE;
     }
 
     /* No interrupt detected */
-    return RFAL_ERR_INTERNAL;
+    return ERR_INTERNAL;
 }
 
 ReturnCode st25r3911GetRegsDump(uint8_t* resRegDump, uint8_t* sizeRegDump)
@@ -615,7 +615,7 @@ ReturnCode st25r3911GetRegsDump(uint8_t* resRegDump, uint8_t* sizeRegDump)
     
     if( (sizeRegDump == NULL) || (resRegDump == NULL) )
     {
-        return RFAL_ERR_PARAM;
+        return ERR_PARAM;
     }
     
     for( regIt = ST25R3911_REG_IO_CONF1; regIt < RFAL_SIZEOF_ARRAY(regDump); regIt++ )
@@ -629,7 +629,7 @@ ReturnCode st25r3911GetRegsDump(uint8_t* resRegDump, uint8_t* sizeRegDump)
         RFAL_MEMCPY(resRegDump, regDump, *sizeRegDump );
     }
 
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 
@@ -662,7 +662,7 @@ ReturnCode st25r3911StreamConfigure(const struct st25r3911StreamConfig *config)
         mode = ST25R3911_REG_MODE_om_bpsk_stream;
         if ((config->din<2U) || (config->din>4U)) /* not in fc/4 .. fc/16 */
         {
-            return RFAL_ERR_PARAM;
+            return ERR_PARAM;
         }
         smd |= (4U - config->din) << ST25R3911_REG_STREAM_MODE_shift_scf;
 
@@ -672,31 +672,31 @@ ReturnCode st25r3911StreamConfigure(const struct st25r3911StreamConfig *config)
         mode = ST25R3911_REG_MODE_om_subcarrier_stream;
         if ((config->din<3U) || (config->din>6U)) /* not in fc/8 .. fc/64 */
         {
-            return RFAL_ERR_PARAM;
+            return ERR_PARAM;
         }
         smd |= (6U - config->din) << ST25R3911_REG_STREAM_MODE_shift_scf;
         if (config->report_period_length == 0U) 
         {
-            return RFAL_ERR_PARAM;
+            return ERR_PARAM;
         }
     }
 
     if ((config->dout<1U) || (config->dout>7U)) /* not in fc/2 .. fc/128 */
     {
-        return RFAL_ERR_PARAM;
+        return ERR_PARAM;
     }
     smd |= (7U - config->dout) << ST25R3911_REG_STREAM_MODE_shift_stx;
 
     if (config->report_period_length > 3U) 
     {
-        return RFAL_ERR_PARAM;
+        return ERR_PARAM;
     }
     smd |= config->report_period_length << ST25R3911_REG_STREAM_MODE_shift_scp;
 
     st25r3911WriteRegister(ST25R3911_REG_STREAM_MODE, smd);
     st25r3911ChangeRegisterBits(ST25R3911_REG_MODE, ST25R3911_REG_MODE_mask_om, mode);
 
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -727,7 +727,7 @@ ReturnCode st25r3911GetRSSI( uint16_t *amRssi, uint16_t *pmRssi )
         *pmRssi = (uint16_t) ( ( (uint32_t)st25r3911Rssi2mV[ (rssi & ST25R3911_REG_RSSI_RESULT_mask_rssi_pm) ] * (uint32_t)st25r3911Gain2Percent[ (gainRed & ST25R3911_REG_GAIN_RED_STATE_mask_gs_pm) ] ) / 100U );
     }
     
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 
@@ -741,7 +741,7 @@ ReturnCode st25r3911SetAntennaMode( bool single, bool rfiox )
     val |= ((rfiox) ? ST25R3911_REG_IO_CONF1_rfo2   : 0U);
     
     st25r3911ChangeRegisterBits( ST25R3911_REG_IO_CONF1, (ST25R3911_REG_IO_CONF1_single | ST25R3911_REG_IO_CONF1_rfo2), val );
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }
 
 /*
@@ -779,5 +779,5 @@ static ReturnCode st25r3911ExecuteCommandAndGetResult(uint8_t cmd, uint8_t resre
         st25r3911ReadRegister(resreg, result);
     }
 
-    return RFAL_ERR_NONE;
+    return ERR_NONE;
 }

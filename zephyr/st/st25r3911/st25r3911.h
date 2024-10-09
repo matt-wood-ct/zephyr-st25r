@@ -58,8 +58,8 @@
 * INCLUDES
 ******************************************************************************
 */
-#include "rfal_platform.h"
-#include "rfal_utils.h"
+#include "platform.h"
+#include "utils.h"
 
 /*
 ******************************************************************************
@@ -177,8 +177,8 @@ struct st25r3911StreamConfig {
  *  This function turn on oscillator and regulator and wait for the oscillator to 
  *  become stable.
  * 
- *  \return RFAL_ERR_SYSTEM : Failure during Oscillator activation
- *  \return RFAL_ERR_NONE   : No error, Oscillator is active and stable, Regulator is on
+ *  \return ERR_SYSTEM : Failure during Oscillator activation
+ *  \return ERR_NONE   : No error, Oscillator is active and stable, Regulator is on
  *
  *****************************************************************************
  */
@@ -210,11 +210,11 @@ extern void st25r3911TxRxOff( void );
  *
  *  This function initialises the ST25R3911 driver.
  *
- *  \return RFAL_ERR_NONE         : Operation successful
- *  \return RFAL_ERR_HW_MISMATCH  : Expected HW do not match or communication error
- *  \return RFAL_ERR_IO           : Error during selftest - check communication interface
- *  \return RFAL_ERR_TIMEOUT      : Timeout during selftest - check IRQ handling
- *  \return RFAL_ERR_SYSTEM       : Failure during seltest - check oscillator or timers
+ *  \return ERR_NONE         : Operation successful
+ *  \return ERR_HW_MISMATCH  : Expected HW do not match or communication error
+ *  \return ERR_IO           : Error during selftest - check communication interface
+ *  \return ERR_TIMEOUT      : Timeout during selftest - check IRQ handling
+ *  \return ERR_SYSTEM       : Failure during seltest - check oscillator or timers
  *
  *****************************************************************************
  */
@@ -242,8 +242,8 @@ extern void st25r3911Deinitialize( void );
  *  \param rxRate : speed is 2^rxrate * 106 kb/s
  *                  0xff : don't set rxrate
  *
- *  \return RFAL_ERR_NONE : No error, both bit rates were set
- *  \return RFAL_ERR_PARAM: At least one bit rate was invalid
+ *  \return ERR_NONE : No error, both bit rates were set
+ *  \return ERR_PARAM: At least one bit rate was invalid
  *
  *****************************************************************************
  */
@@ -261,8 +261,8 @@ extern ReturnCode st25r3911SetBitrate( uint8_t txRate, uint8_t rxRate );
  *  
  *  \param [out] result_mV : Result of calibration in milliVolts.
  *
- *  \return RFAL_ERR_IO : Error during communication with ST25R3911.
- *  \return RFAL_ERR_NONE : No error.
+ *  \return ERR_IO : Error during communication with ST25R3911.
+ *  \return ERR_NONE : No error.
  *
  *****************************************************************************
  */
@@ -387,9 +387,9 @@ extern void st25r3911CalibrateModulationDepth( uint8_t* result );
  *                      Binary weighted, step 0.1 pF, max 3.1 pF
  *
  * 
- *  \return RFAL_ERR_PARAM : Invalid parameter
- *  \return RFAL_ERR_IO    : The calibration was not successful 
- *  \return RFAL_ERR_NONE  : No error
+ *  \return ERR_PARAM : Invalid parameter
+ *  \return ERR_IO    : The calibration was not successful
+ *  \return ERR_NONE  : No error
  *
  *****************************************************************************
  */
@@ -404,7 +404,7 @@ extern ReturnCode st25r3911CalibrateCapacitiveSensor( uint8_t* result );
  *  \param nrt_64fcs : no response time in 64/fc = 4.72us
  *                    completion interrupt
  *
- *  \return RFAL_ERR_PARAM : if time is too large
+ *  \return ERR_PARAM : if time is too large
  */
 extern ReturnCode st25r3911SetNoResponseTime_64fcs( uint32_t nrt_64fcs );
 
@@ -419,7 +419,7 @@ extern ReturnCode st25r3911SetNoResponseTime_64fcs( uint32_t nrt_64fcs );
  *  \param nrt_64fcs : no response time in 64/fc = 4.72us
  *                    completion interrupt
  *
- *  \return RFAL_ERR_PARAM : if time is too large
+ *  \return ERR_PARAM : if time is too large
  */
 extern ReturnCode st25r3911SetStartNoResponseTime_64fcs( uint32_t nrt_64fcs );
 
@@ -438,8 +438,8 @@ extern ReturnCode st25r3911SetStartNoResponseTime_64fcs( uint32_t nrt_64fcs );
  *                           0xff : don't set Threshold (ST25R3911_THRESHOLD_DO_NOT_SET)
  *  \param[in] nTRFW       : Number of TRFW
  * 
- *  \return RFAL_ERR_NONE : no collision detected
- *  \return RFAL_ERR_RF_COLLISION : collision detected
+ *  \return ERR_NONE : no collision detected
+ *  \return ERR_RF_COLLISION : collision detected
  */
 extern ReturnCode st25r3911PerformCollisionAvoidance( uint8_t FieldONCmd, uint8_t pdThreshold, uint8_t caThreshold, uint8_t nTRFW );
 
@@ -559,7 +559,7 @@ bool st25r3911IsCmdValid( uint8_t cmd );
  *
  *  \param[in] config : all settings for bitrates, type, etc.
  *
- *  \return RFAL_ERR_NONE : No error, stream mode driver initialized.
+ *  \return ERR_NONE : No error, stream mode driver initialized.
  *
  *****************************************************************************
  */
@@ -575,7 +575,7 @@ extern ReturnCode st25r3911StreamConfigure( const struct st25r3911StreamConfig *
  *                               will be written
  *  \param[in,out] sizeRegDump : number of registers requested and the ones actually 
  *                               written
- *  \return RFAL_ERR_NONE : No error, stream mode driver initialized.
+ *  \return ERR_NONE : No error, stream mode driver initialized.
  */
 extern ReturnCode st25r3911GetRegsDump( uint8_t* resRegDump, uint8_t* sizeRegDump );
 
@@ -591,8 +591,8 @@ extern ReturnCode st25r3911GetRegsDump( uint8_t* resRegDump, uint8_t* sizeRegDum
  *  \param[out] amRssi: the RSSI on the AM channel expressed in mV 
  *  \param[out] pmRssi: the RSSI on the PM channel expressed in mV 
  *  
- *  \return RFAL_ERR_PARAM : Invalid parameter
- *  \return RFAL_ERR_NONE  : No error
+ *  \return ERR_PARAM : Invalid parameter
+ *  \return ERR_NONE  : No error
  *  
  *****************************************************************************
  */
@@ -609,9 +609,9 @@ ReturnCode st25r3911GetRSSI( uint16_t *amRssi, uint16_t *pmRssi );
  *  \param[in]    single:  FALSE differential ; single ended mode
  *  \param[in]     rfiox:  FALSE   RFI1/RFO1  ; TRUE   RFI2/RFO2
  *
- * \return  RFAL_ERR_IO      : Internal error
- * \return  RFAL_ERR_NOTSUPP : Feature not supported
- * \return  RFAL_ERR_NONE    : No error
+ * \return  ERR_IO      : Internal error
+ * \return  ERR_NOTSUPP : Feature not supported
+ * \return  ERR_NONE    : No error
  *****************************************************************************
  */
 ReturnCode st25r3911SetAntennaMode( bool single, bool rfiox );

@@ -49,7 +49,9 @@
 #define rfalNfcpCbPollerGetCollisionResolutionStatus() ((gNfcDev.disc.propNfc.rfalNfcpPollerGetCollisionResolutionStatus != NULL) ? gNfcDev.disc.propNfc.rfalNfcpPollerGetCollisionResolutionStatus() : ERR_NOTSUPP )
 #define rfalNfcpCbStartActivation()                    ((gNfcDev.disc.propNfc.rfalNfcpStartActivation != NULL) ? gNfcDev.disc.propNfc.rfalNfcpStartActivation() : ERR_NOTSUPP )
 #define rfalNfcpCbGetActivationStatus()                ((gNfcDev.disc.propNfc.rfalNfcpGetActivationStatus != NULL) ? gNfcDev.disc.propNfc.rfalNfcpGetActivationStatus() : ERR_NOTSUPP )
-    
+
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(rfal_nfc, LOG_LEVEL_INF);
 /*
 ******************************************************************************
 * GLOBAL TYPES
@@ -373,6 +375,7 @@ void rfalNfcWorker( void )
             gNfcDev.discTmr = (uint32_t)platformTimerCreate( gNfcDev.disc.totalDuration );
         
             err = rfalNfcPollTechDetetection();                                       /* Perform Technology Detection                         */
+        LOG_INF("Tech detect err: %d found 0x%04X", err, gNfcDev.techsFound);
             if( err != ERR_BUSY )                                                     /* Wait until all technologies are performed            */
             {
                 if( ( err != ERR_NONE) || (gNfcDev.techsFound == RFAL_NFC_TECH_NONE) )/* Check if any error occurred or no techs were found   */

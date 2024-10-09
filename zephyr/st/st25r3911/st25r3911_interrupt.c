@@ -38,7 +38,7 @@
 #include "st25r3911_interrupt.h"
 #include "st25r3911_com.h"
 #include "st25r3911.h"
-#include "rfal_utils.h"
+#include "utils.h"
 
 /*
 ******************************************************************************
@@ -124,7 +124,7 @@ void st25r3911CheckForReceivedInterrupts( void )
     uint32_t irqStatus; 
 
     irqStatus = ST25R3911_IRQ_MASK_NONE;
-    RFAL_MEMSET( iregs, (int32_t)(ST25R3911_IRQ_MASK_ALL & 0xFFU), ST25R3911_INT_REGS_LEN );  /* MISRA 10.3 */
+    memset( iregs, (int32_t)(ST25R3911_IRQ_MASK_ALL & 0xFFU), ST25R3911_INT_REGS_LEN );  /* MISRA 10.3 */
         
     /* In case the IRQ is Edge (not Level) triggered read IRQs until done */
     while( platformGpioIsHigh( ST25R_INT_PORT, ST25R_INT_PIN ) )
