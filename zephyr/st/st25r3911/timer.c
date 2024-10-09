@@ -80,11 +80,7 @@ bool timerIsExpired( uint32_t timer )
 /*******************************************************************************/
 void timerDelay( uint16_t tOut )
 {
-  uint32_t t;
-  
-  /* Calculate the timer and wait blocking until is running */
-  t = timerCalculateTimer( tOut );
-  while( timerIsRunning(t) );
+  k_msleep(tOut);
 }
 
 
