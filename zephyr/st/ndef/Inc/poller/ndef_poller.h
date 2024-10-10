@@ -122,7 +122,7 @@
  ******************************************************************************
  */
 
-#define NDEF_FEATURE_ALL                       true    /*!< Enable/Disable NDEF support for full features (write NDEF, format, ...)   */
+#define NDEF_FEATURE_ALL                       false    /*!< Enable/Disable NDEF support for full features (write NDEF, format, ...)   */
 
 /*
  ******************************************************************************
