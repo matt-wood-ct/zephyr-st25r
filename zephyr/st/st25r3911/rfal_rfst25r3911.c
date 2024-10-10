@@ -3180,9 +3180,9 @@ bool rfalIsExtFieldOn( void )
 /*******************************************************************************/
 ReturnCode rfalListenStart( uint32_t lmMask, const rfalLmConfPA *confA, const rfalLmConfPB *confB, const rfalLmConfPF *confF, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rxLen )
 {
-    RFAL_NO_WARNING(confA);
-    RFAL_NO_WARNING(confB);
-    RFAL_NO_WARNING(confF);
+    NO_WARNING(confA);
+    NO_WARNING(confB);
+    NO_WARNING(confF);
     
     
     /* Check if RFAL is initialized */
@@ -3323,7 +3323,7 @@ static ReturnCode rfalRunListenModeWorker( void )
                 st25r3911ReadRegister(ST25R3911_REG_FIFO_RX_STATUS1, &tmp);
                 *gRFAL.Lm.rxLen = tmp;
                 
-                st25r3911ReadFifo( gRFAL.Lm.rxBuf, (uint8_t)RFAL_MIN( *gRFAL.Lm.rxLen, rfalConvBitsToBytes(gRFAL.Lm.rxBufLen) ) );
+                st25r3911ReadFifo( gRFAL.Lm.rxBuf, (uint8_t)MIN( *gRFAL.Lm.rxLen, rfalConvBitsToBytes(gRFAL.Lm.rxBufLen) ) );
                 
                 /* Check if the data we got has at least the CRC and remove it, otherwise leave at 0 */
                 *gRFAL.Lm.rxLen  -= ((*gRFAL.Lm.rxLen > RFAL_CRC_LEN) ? RFAL_CRC_LEN : *gRFAL.Lm.rxLen);
@@ -3401,10 +3401,10 @@ ReturnCode rfalListenStop( void )
 /*  PRQA S 3673 1 # MISRA 8.13 - ST25R3911B does not support Listen mode. Implementation for other chips will modify rxBuf and rxLen */
 ReturnCode rfalListenSleepStart( rfalLmState sleepSt, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rxLen )
 {
-    RFAL_NO_WARNING(sleepSt);
-    RFAL_NO_WARNING(rxBuf);
-    RFAL_NO_WARNING(rxBufLen);
-    RFAL_NO_WARNING(rxLen);
+    NO_WARNING(sleepSt);
+    NO_WARNING(rxBuf);
+    NO_WARNING(rxBufLen);
+    NO_WARNING(rxLen);
     
     return ERR_NOTSUPP;
 }
